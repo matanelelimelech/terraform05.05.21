@@ -11,9 +11,17 @@ terraform {
 
 
 provider "aws" {
-  region = "us-east-1"
-}
-
+   region = "us-east-1"
+ }
+# module  "workshop-app_lb" {
+#   source = "../"
+#   region = "us-east-1"
+#   azs  =  "us-east-1b, us-east-1a"
+#   vpc_cidr =  "172.18.0.0/18"
+#   private_subnets = "172.18.0.0/19"  
+#   public_subnets  = "172.18.32.0/19"
+#   environment = "workshop-production"  
+# }
 module "vpc" {
   source = "../"
 
@@ -30,7 +38,6 @@ module "vpc" {
   enable_dns_hostnames = true
 
 }
-
 output "environment" {value = [module.vpc.environment]}
 
 output "vpc_cidr" {value = [module.vpc.vpc_cidr]}
