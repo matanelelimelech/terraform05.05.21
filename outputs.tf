@@ -21,3 +21,4 @@ output "public_subnets" {
 output "vpc_id" {
   value = [aws_vpc.vpc.id ]
 }
+#  output "workshop-app" {value = [module.vpc.aws_elb] }
