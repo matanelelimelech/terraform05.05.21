@@ -22,22 +22,26 @@ resource "aws_vpc" "vpc" {
 resource "aws_autoscaling_group" "workshop-app_asg" {
   name = "asg"
   launch_configuration = "${aws_launch_configuration.workshop-app_lb.name}"
-  max_size = (3)
-  min_size = (2)
-  desired_capacity = (2)
+  max_size = (2)
+  min_size = (0)
+  desired_capacity = (1)
   # availability_zones = ["us-east-1a"]
-  vpc_zone_identifier  = ["${aws_subnet.private[0].id}"]
-
-  #  vpc_zone_identifier = element(data.terraform_remote_state.site.outputs.public_subnets, 0)
+  vpc_zone_identifier  = ["${aws_subnet.public[0].id}"]
+  load_balancers = ["${var.cluster_name}lb"]
+  # vpc_zone_identifier = element(data.terraform_remote_state.site.outputs.public_subnets[0].id)
  
  
 
   tag {
     key = "Name"
-    value = "workshop"
+    value = "chef"
     propagate_at_launch = true
   }
-
+tag {
+  key = "protected"
+  value = "yes"
+  propagate_at_launch = true
+}
   tag {
     key = "Team"
     value = "Workshop"
@@ -70,7 +74,7 @@ resource "aws_launch_configuration" "workshop-app_lb" {
 
   image_id = var.ami
   instance_type = var.instance_type
-  
+  key_name = "itamarkeypair"
   
 
   //??? complete the missing attribute
@@ -88,8 +92,8 @@ resource "aws_security_group" "workshop-app_lb" {
 
   ingress {
     description = "TLS from VPC"
-    from_port   = 443
-    to_port     = 443
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -114,7 +118,7 @@ resource "aws_security_group" "workshop-app_lb" {
    listener {
      instance_port     = 80
      instance_protocol = "http"
-     lb_port           = 80
+     lb_port           = 80 
      lb_protocol       = "http"
   }
  }
